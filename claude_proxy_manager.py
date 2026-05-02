@@ -344,41 +344,44 @@ class ClaudeProxyApp(ctk.CTk):
         # Create custom confirmation dialog
         conf_win = ctk.CTkToplevel(self)
         conf_win.title("Model Details")
-        conf_win.geometry("500x400")
+        conf_win.geometry("550x450") # Slightly larger
         conf_win.attributes("-topmost", True)
         conf_win.grid_columnconfigure(0, weight=1)
-        conf_win.configure(padx=20, pady=20)
+        
+        # Make it modal
+        conf_win.grab_set()
         
         # Center window logic
         self.update_idletasks()
-        x = self.winfo_x() + (self.winfo_width() // 2) - 250
-        y = self.winfo_y() + (self.winfo_height() // 2) - 200
+        x = self.winfo_x() + (self.winfo_width() // 2) - 275
+        y = self.winfo_y() + (self.winfo_height() // 2) - 225
         conf_win.geometry(f"+{x}+{y}")
 
         # Model Card Container
         card = ctk.CTkFrame(conf_win, corner_radius=15, border_width=2, border_color="#3d3d3d")
-        card.pack(fill="both", expand=True)
+        card.pack(fill="both", expand=True, padx=20, pady=20)
         
-        ctk.CTkLabel(card, text="NVIDIA NIM MODEL CARD", font=ctk.CTkFont(size=10, weight="bold", spacing=2), text_color="#5a5a5a").pack(pady=(20, 10))
+        ctk.CTkLabel(card, text="NVIDIA NIM MODEL CARD", font=ctk.CTkFont(size=10, weight="bold"), text_color="#888888").pack(pady=(20, 10))
         
         model_name = model_id.split('/')[-1]
-        ctk.CTkLabel(card, text=model_name, font=ctk.CTkFont(size=24, weight="bold")).pack(pady=5)
-        ctk.CTkLabel(card, text=model_id, font=ctk.CTkFont(size=12), text_color="#8a8a8a").pack(pady=(0, 20))
+        ctk.CTkLabel(card, text=model_name, font=ctk.CTkFont(size=24, weight="bold"), text_color="white").pack(pady=5)
+        ctk.CTkLabel(card, text=model_id, font=ctk.CTkFont(size=11), text_color="#aaaaaa").pack(pady=(0, 20))
         
         # Capability Chips
         chip_frame = ctk.CTkFrame(card, fg_color="transparent")
         chip_frame.pack(pady=10)
         
         if not capabilities:
-            ctk.CTkLabel(chip_frame, text="General Purpose", font=ctk.CTkFont(size=10), fg_color="#3d3d3d", corner_radius=10, padx=10).pack(side="left")
+            ctk.CTkLabel(chip_frame, text="GENERAL PURPOSE", font=ctk.CTkFont(size=9, weight="bold"), 
+                         fg_color="#3d3d3d", text_color="white", corner_radius=10, padx=10, pady=4).pack(side="left")
         else:
             for tag, color in capabilities:
-                t = ctk.CTkLabel(chip_frame, text=tag, font=ctk.CTkFont(size=10, weight="bold"), 
-                                 fg_color=color, text_color="white", corner_radius=10, padx=12, pady=4)
+                t = ctk.CTkLabel(chip_frame, text=tag, font=ctk.CTkFont(size=9, weight="bold"), 
+                                 fg_color=color, text_color="white", corner_radius=10, padx=10, pady=4)
                 t.pack(side="left", padx=4)
             
         desc_text = "This model is compatible with Claude Code. Ensure your API key has sufficient credits if not using a free-tier model."
-        ctk.CTkLabel(card, text=desc_text, font=ctk.CTkFont(size=13), wraplength=400, text_color="#bcbcbc").pack(pady=20, padx=30)
+        ctk.CTkLabel(card, text=desc_text, font=ctk.CTkFont(size=13), wraplength=400, text_color="#dddddd").pack(pady=20, padx=30)
         
         # Action Buttons
         btn_frame = ctk.CTkFrame(card, fg_color="transparent")
@@ -395,10 +398,10 @@ class ClaudeProxyApp(ctk.CTk):
             self.log(f"Switched model to {model_id}")
             conf_win.destroy()
 
-        ctk.CTkButton(btn_frame, text="Confirm Selection", command=confirm, width=160, height=35, font=ctk.CTkFont(weight="bold"),
+        ctk.CTkButton(btn_frame, text="Confirm Selection", command=confirm, width=160, height=40, font=ctk.CTkFont(weight="bold"),
                       fg_color="#1f538d", hover_color="#14375e").pack(side="left", padx=10)
-        ctk.CTkButton(btn_frame, text="Go Back", command=conf_win.destroy, width=100, height=35, 
-                      fg_color="transparent", border_width=1, border_color="#3d3d3d").pack(side="left", padx=10)
+        ctk.CTkButton(btn_frame, text="Go Back", command=conf_win.destroy, width=100, height=40, 
+                      fg_color="transparent", border_width=1, border_color="#555555").pack(side="left", padx=10)
 
     def log(self, message):
         self.info_box.configure(state="normal")
