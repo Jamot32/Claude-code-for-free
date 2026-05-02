@@ -24,7 +24,6 @@ NVIDIA_MODELS = [
     "nvidia_nim/mistralai/mistral-large-3-675b-instruct-2512",
     "nvidia_nim/z-ai/glm4.7",
     "nvidia_nim/minimaxai/minimax-m2.7",
-    "nvidia_nim/mistralai/mistral-large-3-675b-instruct-2512",
     "nvidia_nim/qwen/qwen3-coder-480b-a35b-instruct",
     "nvidia_nim/google/gemma-3n-e4b-it"
 ]
@@ -439,7 +438,9 @@ class ClaudeProxyApp(ctk.CTk):
         config = {
             "litellm_settings": {
                 "drop_params": True,
-                "additional_drop_params": drop_list
+                "additional_drop_params": drop_list,
+                "enable_auto_tool_choice": True,
+                "tool_call_parser": "llama3" # Supports tool calling for non-native models
             },
             "model_list": [
                 {
@@ -517,17 +518,20 @@ class ClaudeProxyApp(ctk.CTk):
             self.generate_litellm_config(selected_model)
             self.modify_claude_config(enable=True)
 
-            # Launch LiteLLM in a VISIBLE new console window (same as the video)
-            # This lets you see errors directly if litellm fails to start
+            # Launch LiteLLM in a VISIBLE new console window
+            cmd = [
+                "litellm", 
+                "--config", str(LITELLM_CONFIG_FILE), 
+                "--port", "4000"
+            ]
+            
             if sys.platform == "win32":
                 self.proxy_process = subprocess.Popen(
-                    ["litellm", "--config", str(LITELLM_CONFIG_FILE), "--port", "4000"],
+                    cmd,
                     creationflags=subprocess.CREATE_NEW_CONSOLE,
                 )
             else:
-                self.proxy_process = subprocess.Popen(
-                    ["litellm", "--config", str(LITELLM_CONFIG_FILE), "--port", "4000"],
-                )
+                self.proxy_process = subprocess.Popen(cmd)
 
             self.log("LiteLLM window opened. Waiting for proxy to be ready...")
             self.api_key_entry.configure(state="disabled")
